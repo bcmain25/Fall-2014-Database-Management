@@ -1,0 +1,81 @@
+People: pid -> firstName, lastName, addressStreet1, addressStreet2, addressCity, addressState, addressPostalCode, phoneNumber, age
+Coaches: pid -> yearsCoaching
+HeadCoaches: pid ->
+AssistantCoaches: pid ->
+Players: pid ->
+PlayerRoster: pid -> name, division
+HeadCoachRoster: pid, name, division ->
+AssistantCoachRoster: pid -> name, division
+Teams: name, division ->
+Divisions: division -> lowAge, highAge
+
+I believe my database is in 3rd normal form because it follows the rules of normal form. It is in 1st normal form since every table contains atomic information. An example of this is the decomposition of address for the People table. My database is in 2nd normal form because it follows 1st normal form and all columns depend on the whole key, avoiding partial key dependencies. Most of the tables have a single column for the primary key, where Teams and HeadCoachRoster do not have other columns to depend on a partial key. My database is in 3rd normal form because it follows 2nd normal form and all non-key columns depend on other non-key columns. Avoiding insert, delete, and update anomalies will put my database in BCNF, but not sure how to prove that without specific test data.
+
+create table people (
+pid char(3) not null,
+firstName text,
+lastName text,
+addressStreet1 text,
+addressStreet2 text,
+addressCity text,
+addressState text,
+addressPostalCode integer,
+phoneNumber integer,
+age integer,
+primary key(pid)
+);
+
+create table coaches (
+pid char(3) not null references people(pid),
+yearsCoaching integer
+primary key(pid)
+);
+
+create table players (
+pid char(3) not null references people(pid),
+primary key(pid)
+);
+
+create table headCoaches (
+pid char(3) not null references coaches(pid),
+primary key(pid)
+);
+
+create table assistantCoaches (
+pid char(3) not null references coaches(pid),
+primary key(pid)
+);
+
+create table playerRoster (
+pid char(3) not null references players(pid),
+name references teams(name),
+division references teams(division),
+primary key(pid)
+);
+
+create table headCoachRoster (
+pid char(3) not null references headCoaches(pid),
+name references teams(name),
+division references teams(division),
+primary key(pid, name, division)
+);
+
+create table assistantCoachRoster (
+pid char(3) not null references assistantCoaches(pid),
+name references teams(name),
+division references teams(division),
+primary key(pid)
+);
+
+create table teams (
+name text not null,
+division text not null references divisions(division),
+primary key(name, division)
+);
+
+create table divisions (
+division text not null,
+lowAge integer,
+highAge integer,
+primary key(division)
+);
