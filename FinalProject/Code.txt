@@ -1,0 +1,747 @@
+-- Drop Statements
+
+DROP TABLE IF EXISTS Icons;
+DROP TABLE IF EXISTS Summoners;
+DROP TABLE IF EXISTS StatisticCategories;
+DROP TABLE IF EXISTS MasteryTypes;
+DROP TABLE IF EXISTS Masteries;
+DROP TABLE IF EXISTS MasteryStatistics;
+DROP TABLE IF EXISTS SummonerMasteries;
+DROP TABLE IF EXISTS EpicnessClasses;
+DROP TABLE IF EXISTS TierClasses;
+DROP TABLE IF EXISTS SecondaryBars;
+DROP TABLE IF EXISTS Champions;
+DROP TABLE IF EXISTS Tags;
+DROP TABLE IF EXISTS ChampionPrimaryTags;
+DROP TABLE IF EXISTS ChampionSecondaryTags;
+DROP TABLE IF EXISTS Skins;
+DROP TABLE IF EXISTS ChampionSkins;
+DROP TABLE IF EXISTS SummonerChampions;
+DROP TABLE IF EXISTS Maps;
+DROP TABLE IF EXISTS Minions;
+DROP TABLE IF EXISTS MapMinions;
+DROP TABLE IF EXISTS Monsters;
+DROP TABLE IF EXISTS MapMonsters;
+DROP TABLE IF EXISTS ItemTypes;
+DROP TABLE IF EXISTS Items;
+DROP TABLE IF EXISTS BuildsInto;
+DROP TABLE IF EXISTS ItemStatistics;
+DROP TABLE IF EXISTS Passives;
+DROP TABLE IF EXISTS ItemPassives;
+DROP TABLE IF EXISTS Actives;
+DROP TABLE IF EXISTS ItemActives;
+DROP TABLE IF EXISTS Auras;
+DROP TABLE IF EXISTS ItemAuras;
+DROP TABLE IF EXISTS AvailableItems;
+
+-- Create Statements
+
+create table Icons (
+	name		text	not null,
+releaseDate	date	not null,
+costRP		integer	not null,
+primary key (name)
+);
+
+create table Summoners (
+	username	char(24)	not null,
+	password	char(16)	not null,
+	experience	integer		not null,
+	level		integer		not null,
+	RP		integer		not null,
+	IP		integer 	not null,
+	creationDate	date		not null,
+	icon		text		not null references Icons(name),
+primary key (username)
+);
+
+create table StatisticCategories (
+	category	text	not null,
+primary key (category)
+);
+
+create table MasteryTypes (
+	type	text	not null,
+primary key (type)
+);
+
+create table Masteries (
+	name		text		not null,
+	isActive	boolean	not null,
+	releaseDate	date		not null,
+	type		text		not null references MasteryTypes(type),
+primary key (name)
+);
+
+create table MasteryStatistics (
+	name		text	not null references Masteries(name),
+	category	text	not null references StatisticCategories(category),
+	statistic	integer	not null,
+primary key (name, category)
+);
+
+create table SummonerMasteries (
+	username	text	not null references Summoners(username),
+	mastery	text	not null references Masteries(name),
+	level		integer	not null,
+	page		integer	not null,
+primary key (username, mastery)
+);
+
+create table EpicnessClasses (
+	class	text	not null,
+	costIP	integer	not null,
+primary key (class)
+);
+
+create table TierClasses (
+	class	text	not null,
+	costRP	integer	not null,
+primary key (class)
+);
+
+create table SecondaryBars (
+	name	text	not null,
+primary key (name)
+);
+
+create table Champions (
+	name				text		not null,
+	description			text		not null,
+	releaseDate 			date		not null,
+	passive 			text		not null,
+	passiveDescription 		text		not null,
+	abilityQ 			text		not null,
+	abilityQDescription 		text		not null,
+	abilityW 			text		not null,
+	abilityWDescription 		text		not null,
+	abilityE 			text		not null,
+	abilityEDescription 		text		not null,
+	abilityR 			text		not null,
+	abilityRDescription 		text		not null,
+	baseHealth 			integer		not null,
+	baseHealthRegen 		integer		not null,
+	perLevelHealth 		integer		not null,
+	perLevelHealthRegen 	integer		not null,
+	baseRange 			integer		not null,
+	perLevelRange 		integer		not null,
+	baseArmorPenetration 	integer		not null,
+	baseCriticalChance 		integer		not null,
+	baseCriticalDamage 		integer		not null,
+	baseLifeSteal 			integer		not null,
+	baseAbilityPower 		integer		not null,
+	perLevelAbilityPower 	integer		not null,
+	baseCooldownReduction 	integer		not null,
+	baseMagicPenetration 	integer		not null,
+	baseSecondaryBar 		integer		not null,
+	perLevelSecondaryBar 	integer		not null,
+	baseSecondaryBarRegen 	integer		not null,
+	perLevelSecondaryBarRegen	integer		not null,
+	baseSpellVamp 		integer		not null,
+	baseAttackDamage 		integer		not null,
+	perLevelAttackDamage 	integer		not null,
+	baseAttackSpeed 		integer		not null,
+	perLevelAttackSpeed	 	integer		not null,
+	baseArmor 			integer		not null,
+	perLevelArmor 		integer		not null,
+	baseMagicResist 		integer		not null,
+	perLevelMagicResist 		integer		not null,
+	baseMovementSpeed	 	integer		not null,
+	isActive 			boolean	not null,
+	isFreetoPlay 			boolean	not null,
+	epicnessClass 			text		not null references EpicnessClasses(class),
+	tierClass 			text		not null references TierClasses(class),
+	secondaryBar 			text		not null references SecondaryBars(name),
+primary key (name)
+);
+
+create table Tags (
+	name		text	not null,
+	description	text not null,
+primary key (name)
+);
+
+create table ChampionPrimaryTags (
+	champion	text	not null references Champions(name),
+	tag		text	not null references Tags(name),
+primary key (champion)
+);
+
+create table ChampionSecondaryTags (
+	champion	text	not null references Champions(name),
+	tag		text	not null references Tags(name),
+primary key (champion)
+);
+
+create table Skins (
+	name	text	not null,
+primary key (name)
+);
+
+create table ChampionSkins (
+	skin		text	not null references Skins(name),
+	champion	text	not null references Champions(name),
+	releaseDate	date	not null,
+	costRP		integer	not null,
+primary key (skin, champion)
+);
+
+create table SummonerChampions (
+	summoner		text		not null references Summoners(username),
+	champion		text		not null references Champions(name),
+	purchaseDate		date		not null,
+	purchasedIP		boolean	not null,
+primary key (summoner, champion)
+);
+
+create table Maps (
+	name		text	not null,
+	releaseDate	date	not null,
+primary key (name)
+);
+
+create table Minions (
+	name			text		not null,
+	gold			integer		not null,
+	perMinuteGold	integer		not null,
+	experience		integer		not null,
+	baseHealth		integer		not null,
+	baseRange		integer		not null,
+	baseAttackDamage	integer		not null,
+	baseArmor		integer		not null,
+	baseAttackSpeed	integer		not null,
+	baseMovementSpeed	integer		not null,
+	baseMagicResist	integer		not null,
+	isActive		boolean	not null,
+primary key (name)
+);
+
+create table MapMinions (
+	minion	text	not null references Minions(name),
+	map	text	not null references Maps(name),
+primary key (minion, map)
+);
+
+create table Monsters (
+	name			text		not null,
+	buff			text		not null,
+	buffDescription	text		not null,
+	gold			integer		not null,
+	perMinuteGold	integer		not null,
+	experience		integer		not null,
+	baseHealth		integer		not null,
+	baseRange		integer		not null,
+	baseAttackDamage	integer		not null,
+	baseArmor		integer		not null,
+	baseAttackSpeed	integer		not null,
+	baseMovementSpeed	integer		not null,
+	baseMagicResist	integer		not null,
+	isActive		boolean	not null,
+primary key (name)
+);
+
+create table MapMonsters (
+	monster	text	not null references Monsters(name),
+	map		text	not null references Maps(name),
+primary key (monster, map)
+);
+
+create table ItemTypes (
+	type	text	not null,
+primary key (type)
+);
+
+create table Items (
+	name		text		not null,
+	costGold	integer		not null,
+	isActive	boolean	not null,
+	releaseDate	date		not null,
+	type		text		not null references ItemTypes(type),
+primary key (name)
+);
+
+create table BuildsInto (
+	recipeItem		text	not null references Items(name),
+	completedItem		text	not null references Items(name),
+primary key (recipeItem, completedItem)
+);
+
+create table ItemStatistics (
+	item		text	not null references Items(name),
+	category	text	not null references StatisticCategories(category),
+	statistic	integer	not null,
+primary key (item, category)
+);
+
+create table Passives (
+	name		text		not null,
+	isUnique	boolean	not null,
+primary key (name)
+);
+
+create table ItemPassives (
+	item		text	not null references Items(name),
+	passive		text	not null references Passives(name),
+primary key (item, passive)
+);
+
+create table Actives (
+	name			text		not null,
+	isUnique		boolean	not null,
+	durationSeconds	integer		not null,
+	cooldownSeconds	integer		not null,
+primary key (name)
+);
+
+create table ItemActives (
+	item	text	not null references Items(name),
+	active	text	not null references Actives(name),
+primary key (item, active)
+);
+
+create table Auras (
+	name		text		not null,
+	range		integer		not null,
+	isUnique	boolean	not null,
+primary key (name)
+);
+
+create table ItemAuras (
+	item	text	not null references Items(name),
+	aura	text	not null references Auras(name),
+primary key (item, aura)
+);
+
+create table AvailableItems (
+	item		text	not null references Items(name),
+	champion	text	not null references Champions(name),
+	map		text	not null references Maps(name),
+primary key (item, champion, map)
+);
+
+-- Insert Statements
+
+insert into Icons(name, releaseDate, costRP)
+values('icon1', 'Jan-1-2010', 250); 
+
+insert into Icons(name, releaseDate, costRP)
+values('blue', 'Feb-20-2014', 300);
+
+insert into Icons(name, releaseDate, costRP)
+values('red', 'Jan-1-2010', 300);
+
+insert into Summoners(username, password, experience, level, RP, IP, creationDate, icon)
+values('bcmain25', 'password', 1000, 30, 999, 125, 'Dec-25-2011', 'blue');
+
+insert into Summoners(username, password, experience, level, RP, IP, creationDate, icon)
+values('Alan', 'pass123', 999, 29, 0, 0, 'Dec-26-2012', 'icon1');
+
+insert into Summoners(username, password, experience, level, RP, IP, creationDate, icon)
+values('guy', '12348765', 0, 1, 0, 0, 'Mar-01-2013', 'red');
+
+insert into Summoners(username, password, experience, level, RP, IP, creationDate, icon)
+values('girl', 'password', 1000, 30, 50, 0, 'Dec-25-2013', 'blue');
+
+insert into Summoners(username, password, experience, level, RP, IP, creationDate, icon)
+values('TheOne', 'TheOne', 1000, 30, 999999, 999999, 'Jan-01-2012', 'red');
+
+insert into StatisticCategories(category)
+values('Attack Damage');
+
+insert into StatisticCategories(category)
+values('Ability Power');
+
+insert into StatisticCategories(category)
+values('Cooldown Reduction');
+
+insert into StatisticCategories(category)
+values('Health');
+
+insert into MasteryTypes(type)
+values('Offensive');
+
+insert into MasteryTypes(type)
+values('Defensive');
+
+insert into MasteryTypes(type)
+values('Utility');
+
+insert into Masteries(name, isActive, releaseDate, type)
+values('Double-Edged Sword', true, 'Nov-25-2013', 'Offensive');
+
+insert into Masteries(name, isActive, releaseDate, type)
+values('Expose Weakness', true, 'Nov-25-2013', 'Offensive');
+
+insert into Masteries(name, isActive, releaseDate, type)
+values('Block', true, 'Nov-25-2013', 'Defensive');
+
+insert into Masteries(name, isActive, releaseDate, type)
+values('Mastermind', false, 'Nov-25-2011', 'Utility');
+
+insert into Masteries(name, isActive, releaseDate, type)
+values('Intelligence', true, 'Nov-25-2013', 'Utility');
+
+insert into MasteryStatistics(name, category, statistic)
+values('Intelligence', 'Cooldown Reduction', 15);
+
+insert into MasteryStatistics(name, category, statistic)
+values('Block', 'Health', 100);
+
+insert into MasteryStatistics(name, category, statistic)
+values('Expose Weakness', 'Attack Damage', 9);
+
+insert into MasteryStatistics(name, category, statistic)
+values('Expose Weakness', 'Ability Power', 9);
+
+insert into MasteryStatistics(name, category, statistic)
+values('Mastermind', 'Cooldown Reduction', 15);
+
+insert into SummonerMasteries(username, mastery, level, page)
+values('bcmain25', 'Block', 2, 1);
+
+insert into SummonerMasteries(username, mastery, level, page)
+values('Alan', 'Block', 2, 1);
+
+insert into SummonerMasteries(username, mastery, level, page)
+values('guy', 'Intelligence', 1, 4);
+
+insert into SummonerMasteries(username, mastery, level, page)
+values('guy', 'Expose Weakness', 1, 2);
+
+insert into EpicnessClasses(class, costIP)
+values('Heroic', 450);
+
+insert into EpicnessClasses(class, costIP)
+values('Epic', 1350);
+
+insert into EpicnessClasses(class, costIP)
+values('Legendary', 6300);
+
+insert into TierClasses(class, costRP)
+values('Tier 1', 260);
+
+insert into TierClasses(class, costRP)
+values('Tier 2', 790);
+
+insert into TierClasses(class, costRP)
+values('Tier 3', 975);
+
+insert into SecondaryBars(name)
+values('Mana');
+
+insert into SecondaryBars(name)
+values('Health');
+
+insert into SecondaryBars(name)
+values('Energy');
+
+insert into SecondaryBars(name)
+values('Manaless');
+
+insert into Champions(name, description, releaseDate, passive, passiveDescription, abilityQ, abilityQDescription, abilityW, abilityWDescription, abilityE, abilityEDescription, abilityR, abilityRDescription, baseHealth, baseHealthRegen, perLevelHealth, perLevelHealthRegen, baseRange, perLevelRange, baseArmorPenetration, baseCriticalChance, baseCriticalDamage, baseLifeSteal, baseAbilityPower, perLevelAbilityPower, baseCooldownReduction, baseMagicPenetration, baseSecondaryBar, perLevelSecondaryBar, baseSecondaryBarRegen, perLevelSecondaryBarRegen, baseSpellVamp, baseAttackDamage, perLevelAttackDamage, baseAttackSpeed, perLevelAttackSpeed, baseArmor, perLevelArmor, baseMagicResist, perLevelMagicResist, baseMovementSpeed, isActive, isFreetoPlay, epicnessClass, tierClass, secondaryBar)
+values('Garen', 'the Might of Demacia', 'Apr-27-2010', 'Perseverance', 'Garen will regenerate his maximum health every second.', 'Decisive Strike', 'Garen breaks free from all slows affecting him.', 'Courage', 'Garen gains a defensive shield for a few seconds.', 'Judgment', 'Garen spins rapidly with his sword around his body for 3 seconds.', 'Demacian Justice', 'Garen calls upon the might of Demacia to attempt to execute an enemy champion.', 616, 8, 96, 1, 125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 4, 1, 3, 28, 3, 32, 1, 345, true, false, 'Heroic', 'Tier 1', 'Manaless');
+
+insert into Champions(name, description, releaseDate, passive, passiveDescription, abilityQ, abilityQDescription, abilityW, abilityWDescription, abilityE, abilityEDescription, abilityR, abilityRDescription, baseHealth, baseHealthRegen, perLevelHealth, perLevelHealthRegen, baseRange, perLevelRange, baseArmorPenetration, baseCriticalChance, baseCriticalDamage, baseLifeSteal, baseAbilityPower, perLevelAbilityPower, baseCooldownReduction, baseMagicPenetration, baseSecondaryBar, perLevelSecondaryBar, baseSecondaryBarRegen, perLevelSecondaryBarRegen, baseSpellVamp, baseAttackDamage, perLevelAttackDamage, baseAttackSpeed, perLevelAttackSpeed, baseArmor, perLevelArmor, baseMagicResist, perLevelMagicResist, baseMovementSpeed, isActive, isFreetoPlay, epicnessClass, tierClass, secondaryBar)
+values('Kalista', 'The Spear of Vengeance', 'Nov-20-2014', 'Martial Poise', 'Kalista can move while attacking with basic attacks.', 'Pierce', 'Kalista hurls a fast and narrow spear.', 'Sentinel', 'Kalista commands a soul sentinel to gain sight.', 'Rend', 'Kalista rips all spears from nearby enemies.', 'Call of Fate', 'Kalista draws her ally next to her, allowing them to knock up surrounding enemies.', 517, 6, 83, 1, 550, 0, 0, 0, 0, 0, 0, 0, 0, 0, 231, 6, 35, 1, 0, 53, 3, 1, 3, 19, 4, 30, 0, 325, true, true, 'Legendary', 'Tier 3', 'Mana');
+
+insert into Champions(name, description, releaseDate, passive, passiveDescription, abilityQ, abilityQDescription, abilityW, abilityWDescription, abilityE, abilityEDescription, abilityR, abilityRDescription, baseHealth, baseHealthRegen, perLevelHealth, perLevelHealthRegen, baseRange, perLevelRange, baseArmorPenetration, baseCriticalChance, baseCriticalDamage, baseLifeSteal, baseAbilityPower, perLevelAbilityPower, baseCooldownReduction, baseMagicPenetration, baseSecondaryBar, perLevelSecondaryBar, baseSecondaryBarRegen, perLevelSecondaryBarRegen, baseSpellVamp, baseAttackDamage, perLevelAttackDamage, baseAttackSpeed, perLevelAttackSpeed, baseArmor, perLevelArmor, baseMagicResist, perLevelMagicResist, baseMovementSpeed, isActive, isFreetoPlay, epicnessClass, tierClass, secondaryBar)
+values('Zed', 'the Master of Shadows', 'Nov-13-2012', 'Contempt for the Weak', 'Zed deals extra damage against targets below 50% health', 'Razor Shuriken', 'Zed throws his spinning blades forward.', 'Living Shadow', 'Zed creates a shadow that copies his moves for 4 seconds.', 'Shadow Slash', 'Zed spins his blades, creating a bursh of shadow energy.', 'Death Mark', 'Zed becomes untargetable for a second and marks the enemy for death.', 579, 7, 80, 1, 125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 3, 1, 3, 27, 4, 32, 1, 345, false, false, 'Legendary', 'Tier 2', 'Energy');
+
+insert into Tags(name, description)
+values('Mage', 'Damage-based champions whose abilities are typically ranged and greatly affected by ability power.');
+
+insert into Tags(name, description)
+values('Fighter', 'A hybrid between DPS and tanking, these champions combine the survivability of a tank and the damage of a DPS or a caster. Although they do not quite match up to their specialized counterparts in either role, they still excel in both.');
+
+insert into Tags(name, description)
+values('Assassin', 'Champions which specialize in killing other heroes quickly. These champions usually are physical attackers and are DPS-based or are AP burst oriented. All of them have some form of invisibility or sudden ambushing ability.');
+
+insert into Tags(name, description)
+values('Tank', 'Tanks are champions who are designed to take huge amounts of damage. Tanks are usually champions that sport high amounts of health and armor. If left alone, tanks are able to accumulate high amounts of damage or disables on their foes.');
+
+insert into Tags(name, description)
+values('Marksman', ' Champions that generally start off weaker than other champions, but become gradually powerful as they gain levels and items to the point where they can potentially take on multiple champions by themselves. Most carries have skills, passive or active, that scale with their stats, such as an increase in Base Damage and Attack Speed, and rely mostly on their regular attack to dish out damage. Carry champions are extremely effective late-game at pushing the team to victory, either by killing off key players on the enemy team, controlling elements of gameplay, deal large damage in team fights or supporting the team in attacking.');
+
+insert into ChampionPrimaryTags(champion, tag)
+values('Garen', 'Fighter');
+
+insert into ChampionPrimaryTags(champion, tag)
+values('Kalista', 'Marksman');
+
+insert into ChampionPrimaryTags(champion, tag)
+values('Zed', 'Assassin');
+
+insert into ChampionSecondaryTags(champion, tag)
+values('Garen', 'Tank');
+
+insert into ChampionSecondaryTags(champion, tag)
+values('Zed', 'Fighter');
+
+insert into Skins(name)
+values('Shockblade');
+
+insert into Skins(name)
+values('Rugged');
+
+insert into Skins(name)
+values('Battlecast');
+
+insert into ChampionSkins(skin, champion, releaseDate, costRP)
+values('Battlecast', 'Garen', 'Jan-01-2011', 900);
+
+insert into ChampionSkins(skin, champion, releaseDate, costRP)
+values('Battlecast', 'Zed', 'Jan-01-2011', 950);
+
+insert into ChampionSkins(skin, champion, releaseDate, costRP)
+values('Shockblade', 'Zed', 'Feb-22-2013', 350);
+
+insert into SummonerChampions(summoner, champion, purchaseDate, purchasedIP)
+values('bcmain25', 'Zed', 'Feb-22-2013', true);
+
+insert into SummonerChampions(summoner, champion, purchaseDate, purchasedIP)
+values('bcmain25', 'Garen', 'Feb-23-2013', false);
+
+insert into SummonerChampions(summoner, champion, purchaseDate, purchasedIP)
+values('bcmain25', 'Kalista', 'Feb-24-2013', true);
+
+insert into SummonerChampions(summoner, champion, purchaseDate, purchasedIP)
+values('Alan', 'Zed', 'Feb-22-2013', false);
+
+insert into SummonerChampions(summoner, champion, purchaseDate, purchasedIP)
+values('Alan', 'Kalista', 'Feb-25-2013', true);
+
+insert into Maps(name, releaseDate)
+values('Rift', 'Jun-01-2011');
+
+insert into Maps(name, releaseDate)
+values('Treeline', 'Jun-01-2011');
+
+insert into Maps(name, releaseDate)
+values('Abyss', 'Jan-24-2013');
+
+insert into Minions(name, gold, perMinuteGold, experience, baseHealth, baseRange, baseAttackDamage, baseArmor, baseAttackSpeed, baseMovementSpeed, baseMagicResist, isActive)
+values('Caster', 15, 1, 30, 100, 300, 5, 5, 1, 300, 5, true);
+
+insert into Minions(name, gold, perMinuteGold, experience, baseHealth, baseRange, baseAttackDamage, baseArmor, baseAttackSpeed, baseMovementSpeed, baseMagicResist, isActive)
+values('Siege', 20, 2, 40, 300, 400, 10, 10, 2, 300, 10, true);
+
+insert into MapMinions(minion, map)
+values('Caster', 'Rift');
+
+insert into MapMinions(minion, map)
+values('Siege', 'Rift');
+
+insert into MapMinions(minion, map)
+values('Caster', 'Treeline');
+
+insert into MapMinions(minion, map)
+values('Siege', 'Abyss');
+
+insert into Monsters(name, buff, buffDescription, gold, perMinuteGold, experience, baseHealth, baseRange, baseAttackDamage, baseArmor, baseAttackSpeed, baseMovementSpeed, baseMagicResist, isActive)
+values('Dragon', 'Global Gold', 'Gives team who slains Dragon 300 gold each.', 300, 0, 400, 3000, 900, 90, 90, 4, 5, 90, true);
+
+insert into Monsters(name, buff, buffDescription, gold, perMinuteGold, experience, baseHealth, baseRange, baseAttackDamage, baseArmor, baseAttackSpeed, baseMovementSpeed, baseMagicResist, isActive)
+values('Baron', 'Head of Baron', 'Gives team who slains Baron increased ability power and attack damage.', 0, 0, 400, 9000, 1000, 100, 100, 5, 10, 100, true);
+
+insert into MapMonsters(monster, map)
+values('Dragon', 'Rift');
+
+insert into MapMonsters(monster, map)
+values('Baron', 'Rift');
+
+insert into MapMonsters(monster, map)
+values('Dragon', 'Treeline');
+
+insert into ItemTypes(type)
+values('Basic');
+
+insert into ItemTypes(type)
+values('Legendary');
+
+insert into ItemTypes(type)
+values('Mythic');
+
+insert into Items(name, costGold, isActive, releaseDate, type)
+values('Sword', 360, true, 'Jan-04-2013', 'Basic');
+
+insert into Items(name, costGold, isActive, releaseDate, type)
+values('BF Sword', 1550, true, 'Jan-04-2013', 'Legendary');
+
+insert into Items(name, costGold, isActive, releaseDate, type)
+values('Infinity Edge', 3000, true, 'Jan-04-2013', 'Mythic');
+
+insert into Items(name, costGold, isActive, releaseDate, type)
+values('Black Spear', 0, true, 'Nov-20-2014', 'Basic');
+
+insert into BuildsInto(recipeItem, completedItem)
+values('Sword', 'BF Sword');
+
+insert into BuildsInto(recipeItem, completedItem)
+values('BF Sword', 'Infinity Edge');
+
+insert into ItemStatistics(item, category, statistic)
+values('Sword', 'Attack Damage', 30);
+
+insert into ItemStatistics(item, category, statistic)
+values('BF Sword', 'Attack Damage', 50);
+
+insert into ItemStatistics(item, category, statistic)
+values('Infinity Edge', 'Attack Damage', 100);
+
+insert into ItemStatistics(item, category, statistic)
+values('Infinity Edge', 'Cooldown Reduction', 10);
+
+insert into Passives(name, isUnique)
+values('Life', false);
+
+insert into Passives(name, isUnique)
+values('Blood', false);
+
+insert into Passives(name, isUnique)
+values('Heal', true);
+
+insert into ItemPassives(item, passive)
+values('BF Sword', 'Blood');
+
+insert into ItemPassives(item, passive)
+values('Infinity Edge', 'Heal');
+
+insert into ItemPassives(item, passive)
+values('Infinity Edge', 'Blood');
+
+insert into Actives(name, isUnique, durationSeconds, cooldownSeconds)
+values('Slow', true, 3, 90);
+
+insert into Actives(name, isUnique, durationSeconds, cooldownSeconds)
+values('Damage', true, 15, 120);
+
+insert into ItemActives(item, active)
+values('BF Sword', 'Damage');
+
+insert into ItemActives(item, active)
+values('Black Spear', 'Slow');
+
+insert into Auras(name, range, isUnique)
+values('Slow', 500, true);
+
+insert into Auras(name, range, isUnique)
+values('Heal', 200, false);
+
+insert into ItemAuras(item, aura)
+values('Black Spear', 'Heal');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Garen', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Garen', 'Treeline');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Garen', 'Abyss');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Kalista', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Kalista', 'Treeline');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Kalista', 'Abyss');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Zed', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Zed', 'Treeline');
+
+insert into AvailableItems(item, champion, map)
+values('Sword', 'Zed', 'Abyss');
+
+insert into AvailableItems(item, champion, map)
+values('Black Spear', 'Kalista', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Black Spear', 'Kalista', 'Treeline');
+
+insert into AvailableItems(item, champion, map)
+values('Black Spear', 'Kalista', 'Abyss');
+
+insert into AvailableItems(item, champion, map)
+values('BF Sword', 'Garen', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('BF Sword', 'Kalista', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('BF Sword', 'Zed', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Infinity Edge', 'Garen', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Infinity Edge', 'Kalista', 'Rift');
+
+insert into AvailableItems(item, champion, map)
+values('Infinity Edge', 'Zed', 'Rift');
+
+-- Find all summoners who own champion 'Kalista'
+select summoner
+from SummonerChampions
+where champion = 'Kalista'
+
+-- Find all champions who can buy an item that has the 'Slow' active.
+select distinct ai.champion
+from AvailableItems ai, Items i, ItemActives ia
+where ai.item = i.name
+  and i.name = ia.item
+  and ia.active = 'Slow'
+
+-- Stored Procedure to find BuildsInto completedItems
+create or replace function BuildsInto(text, REFCURSOR) returns refcursor as 
+$$
+declare
+   item      text       := $1;
+   resultset   REFCURSOR := $2;
+begin
+   open resultset for 
+      select completedItem
+      from   BuildsInto
+      where  recipeItem = item;
+   return resultset;
+end;
+$$ 
+language plpgsql;
+
+select BuildsInto('Sword', 'results');
+Fetch all from results;
+
+-- Stored Procedure to find BuildsInto recipeItems
+create or replace function BuildsInto(text, REFCURSOR) returns refcursor as 
+$$
+declare
+   item      text       := $1;
+   resultset   REFCURSOR := $2;
+begin
+   open resultset for 
+      select recipeItem
+      from   BuildsInto
+      where  completedItem = item;
+   return resultset;
+end;
+$$ 
+language plpgsql;
+
+select BuildsInto('BF Sword', 'results');
+Fetch all from results;
+
+CREATE ROLE admin;
+
+GRANT SELECT, INSERT, UPDATE, ALTER
+ON ALL TABLES IN SCHEMA PUBLIC
+TO admin;
+
+CREATE ROLE user;
+
+GRANT SELECT
+ON ALL TABLES IN SCHEMA PUBLIC
+TO user;
